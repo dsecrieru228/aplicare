@@ -1,0 +1,59 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die();
+}
+
+// No need to do anything if the request is via WP-CLI.
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	return;
+}
+
+// Ref https://premium.wpmudev.org/docs/api-plugin-development/forminator-api-docs/#method-get_entries
+
+//Starting the function to show ID user by Shortcut
+function custom_form_table_front(){
+
+    ob_start();
+
+
+    $form_id = 170;
+    $entries = Forminator_API::get_entries( $form_id );
+
+
+    $dataFormated = [];
+
+    // Formating the data to loop easier on <table></table>
+    foreach( $entries as $entry ){
+
+        //Add your field values, use print_r($entry) for more information
+        $dataFormated[] = [
+            'name'      => $entry->meta_data['name-1']['value'],
+            'email'   => $entry->meta_data['email-1']['value'],
+        ];
+
+    }
+
+    ?>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>E-mail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($dataFormated as $data): ?>
+                <tr>
+                    <td> <?php echo  $data['name'] ?> </td>
+                    <td> <?php echo  $data['email'] ?> </td>
+                </tr>
+            <?php endforeach ?>
+        </tbody>
+    </table>
+
+    <?php
+    return ob_get_clean();
+
+}add_shortcode('form-entries','custom_form_table_front');
